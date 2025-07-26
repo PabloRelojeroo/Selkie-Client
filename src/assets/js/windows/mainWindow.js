@@ -1,5 +1,5 @@
 /**
- * @author Luuxis
+ * @author Pablo
  * @license CC-BY-NC 4.0 - https://creativecommons.org/licenses/by-nc/4.0
  */
 
@@ -30,7 +30,7 @@ function createWindow() {
         minHeight: 552,
         resizable: true,
         icon: `./src/assets/images/icon.${os.platform() === "win32" ? "ico" : "png"}`,
-        frame: false,
+        frame: os.platform() !== 'win32',
         show: false,
         webPreferences: {
             contextIsolation: false,

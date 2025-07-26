@@ -65,7 +65,7 @@ class Index {
                 generateUpdatesFilesForAllChannels: false,
                 appId: preductname,
                 productName: preductname,
-                copyright: 'Copyright © 2020-2024 Luuxis',
+                copyright: 'Copyright © 2020-2024 Pablo',
                 artifactName: "${productName}-${os}-${arch}.${ext}",
                 extraMetadata: { main: 'app/app.js' },
                 files: ["app/**/*", "package.json", "LICENSE.md"],
@@ -92,7 +92,7 @@ class Index {
                 mac: {
                     icon: "./app/assets/images/icon.icns",
                     category: "public.app-category.games",
-                    identity: null,
+                    identity: "PabloRelojero",
                     target: [{
                         target: "dmg",
                         arch: "universal"
@@ -111,9 +111,9 @@ class Index {
                 }
             }
         }).then(() => {
-            console.log('le build est terminé')
+            console.log('El buildeo ha finalizado')
         }).catch(err => {
-            console.error('Error during build!', err)
+            console.error('Error en el build', err)
         })
     }
 

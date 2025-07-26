@@ -1,5 +1,5 @@
 /**
- * @author Luuxis
+ * @author Pablo
  * @license CC-BY-NC 4.0 - https://creativecommons.org/licenses/by-nc/4.0
  */
 // import panel
@@ -14,15 +14,14 @@ const { AZauth, Microsoft, Mojang } = require('minecraft-java-core');
 // libs
 const { ipcRenderer } = require('electron');
 const fs = require('fs');
-const os = require('os');
 
 class Launcher {
     async init() {
         this.initLog();
-        console.log('Initializing Launcher...');
+        console.log('Iniciando launcher...');
         this.shortcut()
         await setBackground()
-        this.initFrame();
+        if (process.platform == 'win32') this.initFrame();
         this.config = await config.GetConfig().then(res => res).catch(err => err);
         if (await this.config.error) return this.errorConnect()
         this.db = new database();
@@ -61,17 +60,16 @@ class Launcher {
     }
 
     initFrame() {
-        console.log('Initializing Frame...')
-        const platform = os.platform() === 'darwin' ? "darwin" : "other";
+        console.log('Iniciando Frame...')
+        document.querySelector('.frame').classList.toggle('hide')
+        document.querySelector('.dragbar').classList.toggle('hide')
 
-        document.querySelector(`.${platform} .frame`).classList.toggle('hide')
-
-        document.querySelector(`.${platform} .frame #minimize`).addEventListener('click', () => {
+        document.querySelector('#minimize').addEventListener('click', () => {
             ipcRenderer.send('main-window-minimize');
         });
 
         let maximized = false;
-        let maximize = document.querySelector(`.${platform} .frame #maximize`);
+        let maximize = document.querySelector('#maximize')
         maximize.addEventListener('click', () => {
             if (maximized) ipcRenderer.send('main-window-maximize')
             else ipcRenderer.send('main-window-maximize');
@@ -80,13 +78,13 @@ class Launcher {
             maximize.classList.toggle('icon-restore-down')
         });
 
-        document.querySelector(`.${platform} .frame #close`).addEventListener('click', () => {
+        document.querySelector('#close').addEventListener('click', () => {
             ipcRenderer.send('main-window-close');
         })
     }
 
     async initConfigClient() {
-        console.log('Initializing Config Client...')
+        console.log('Iniciando la configuracion del cliente...')
         let configClient = await this.db.readData('configClient')
 
         if (!configClient) {
@@ -144,7 +142,7 @@ class Launcher {
                 if (account.meta.type === 'Xbox') {
                     console.log(`Account Type: ${account.meta.type} | Username: ${account.name}`);
                     popupRefresh.openPopup({
-                        title: 'Connexion',
+                        title: 'Conectando',
                         content: `Refresh account Type: ${account.meta.type} | Username: ${account.name}`,
                         color: 'var(--color)',
                         background: false
@@ -169,7 +167,7 @@ class Launcher {
                 } else if (account.meta.type == 'AZauth') {
                     console.log(`Account Type: ${account.meta.type} | Username: ${account.name}`);
                     popupRefresh.openPopup({
-                        title: 'Connexion',
+                        title: 'Conecion',
                         content: `Refresh account Type: ${account.meta.type} | Username: ${account.name}`,
                         color: 'var(--color)',
                         background: false
@@ -193,7 +191,7 @@ class Launcher {
                 } else if (account.meta.type == 'Mojang') {
                     console.log(`Account Type: ${account.meta.type} | Username: ${account.name}`);
                     popupRefresh.openPopup({
-                        title: 'Connexion',
+                        title: 'Conexion',
                         content: `Refresh account Type: ${account.meta.type} | Username: ${account.name}`,
                         color: 'var(--color)',
                         background: false

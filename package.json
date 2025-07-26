@@ -1,20 +1,21 @@
 {
-    "name": "Selvania-Launcher",
-    "preductname": "Selvania Launcher",
-    "version": "2.1.1",
-    "description": "Launcher Mincraft pour le serveur Selvania",
+    "name": "selkieclient",
+    "preductname": "Selike Client",
+    "version": "1.3.0",
+    "description": "Launcher para la comunidad de Selkie",
     "main": "src/app.js",
     "author": {
-        "name": "luuxis, Inc.",
-        "email": "contact@luuxis.fr",
-        "url": "https://github.com/luuxis"
+        "name": "PabloRelojero",
+        "email": "pablorelojerodev@gmail.com",
+        "url": "https://github.com/PabloRelojeroo"
     },
-    "url": "http://launcher.luuxis.fr",
+    "url": "https://pablorelojerio.online",
     "scripts": {
         "start": "cross-env-shell NODE_ENV=dev electron .",
         "dev": "cross-env-shell DEV_TOOL=open nodemon --exec npm start",
         "build": "node build.js --obf=true --build=platform",
-        "icon": "node build.js --icon=https://raw.githubusercontent.com/luuxis/Selvania-Launcher/master/src/assets/images/icon.png"
+        "icon": "node build.js --icon=https://pablorelojerio.online/icon.png",
+        "build2": "cross-env-shell NODE_ENV=prod electron-builder --config=build.json"
     },
     "license": "CCANC",
     "nodemonConfig": {
@@ -22,7 +23,8 @@
         "ignore": "**/test"
     },
     "dependencies": {
-        "electron-updater": "^6.1.8",
+        "discord-rpc": "^4.0.1",
+        "electron-updater": "^6.6.2",
         "minecraft-java-core": "^4.1.1",
         "node-bdd": "^2.0.4",
         "node-fetch": "^2.7.0",
@@ -30,15 +32,15 @@
     },
     "devDependencies": {
         "cross-env": "^7.0.3",
-        "electron": "^30.5.1",
+        "electron": "^36.2.0",
         "electron-builder": "^26.0.12",
-        "javascript-obfuscator": "^4.1.0",
+        "javascript-obfuscator": "^4.1.1",
         "jimp": "^0.22.12",
         "nodemon": "^3.1.2",
         "png2icons": "^2.0.1"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/luuxis/Selvania-Launcher.git"
+        "url": "git+https://github.com/PabloRelojeroo/SelkieClients.git"
     }
 }

@@ -1,9 +1,162 @@
 .home .container {
+    padding-left: 90px;
     display: flex;
     height: 100%;
     flex-direction: column;
     align-items: center;
 }
+
+/* Animaciones para el botón de jugar */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+  
+  @keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  .play-instance {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    border: solid 3px var(--element-color);
+    border-radius: 15px;
+    height: 3.2rem;
+    padding-right: 0.5rem;
+    transition: all 0.3s ease;
+    overflow: hidden;
+  }
+  
+  .play-instance:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  }
+  
+  .play-instance:active {
+    transform: translateY(1px);
+  }
+  
+  .play-btn {
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(90deg, var(--element-color), var(--color), var(--element-color));
+    background-size: 200% 100%;
+    color: var(--background);
+    font-size: 2rem;
+    font-weight: bolder;
+    padding: 0 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 0;
+    height: 100%;
+    animation: gradient-shift 3s ease infinite;
+  }
+  
+  .play-btn:hover {
+    background-size: 150% 100%;
+  }
+  
+  /* Mejoras para la información de descarga */
+  .info-starting-game {
+    display: none;
+    text-align: center;
+    background: var(--background-transparent);
+    border-radius: 15px;
+    padding: 12px;
+    width: 280px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .info-starting-game-text {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    font-weight: bold;
+  }
+  
+  .download-stats {
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+    font-size: 0.9rem;
+    color: var(--color);
+  }
+  
+  .download-speed {
+    color: #1AC707;
+  }
+  
+  .download-eta {
+    color: #ffaa00;
+  }
+  
+  .progress-container {
+    position: relative;
+    width: 100%;
+    height: 20px;
+    margin: 10px 0;
+  }
+  
+  .progress-bar {
+    appearance: none;
+    width: 100%;
+    height: 10px;
+    margin: 0;
+    border-radius: 10px;
+  }
+  
+  .progress-bar::-webkit-progress-bar {
+    background-color: var(--background);
+    border: solid 1px var(--element-color);
+    border-radius: 10px;
+  }
+  
+  .progress-bar::-webkit-progress-value {
+    background: linear-gradient(90deg, var(--element-color), #1AC707);
+    border-radius: 10px;
+    transition: width 0.2s ease;
+  }
+  
+  .progress-percentage {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    font-weight: bold;
+  }
+  
+  /* Animación de carga */
+  .loading-animation {
+    display: none;
+    margin-top: 5px;
+  }
+  
+  .loading-dots {
+    display: inline-block;
+  }
+  
+  .loading-dots:after {
+    content: '.';
+    animation: dots 1.5s steps(5, end) infinite;
+  }
+  
+  @keyframes dots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60% { content: '...'; }
+    80%, 100% { content: ''; }
+  }
+  
+  /* Animación para el estado del juego en curso */
+  .game-running {
+    color: #1AC707;
+    animation: pulse 2s infinite ease-in-out;
+  }
 
 /*******************************************************************************
  *                                                                             *
@@ -74,9 +227,10 @@
 
 .home-bottom {
     position: relative;
-    width: 100%;
     height: calc(100% - 80px - 8rem);
     display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 /*******************************************************************************
@@ -89,7 +243,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 85%;
+    width: calc(85% - 90px);
     height: 100%;
 }
 
@@ -170,7 +324,7 @@
     display: flex;
     bottom: 0;
     right: 0;
-    width: 15%;
+    width: calc(15% - 90px);
     height: calc(80% - 1rem);
     justify-content: center;
     margin-bottom: 1rem;
@@ -208,23 +362,92 @@
  *                                                                             *
  ******************************************************************************/
 
-.sidebar {
+ .sidebar-logos {
     display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+}
+
+.instance-logo-container {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    padding: 5px;
+}
+
+.instance-logo-container:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.instance-logo-container.active-instance {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.body {
+    transition: background-image 0.5s ease;
+}
+
+.instance-logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    border-radius: 6px;
+}
+
+.sidebar-logos::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sidebar-logos::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.instance-logo-container[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    margin-left: 10px;
+    white-space: nowrap;
+    z-index: 1000;
+    font-size: 14px;
+}
+
+.sidebar-logos::-webkit-scrollbar-thumb {
+    background: var(--element-color);
+    border-radius: 5px;
+}
+
+ .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
-    height: 90px;
-    background: var(--background-transparent);
+    width: 90px;
+    height: 100vh;
+
 }
 
 .player-options {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: flex-end;
     align-items: center;
     border-radius: 15px;
-    height: 3rem;
-    margin: 0 1.5rem;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
 }
+
 
 .player-head {
     background: url('../../images/default/setve.png'), no-repeat;
@@ -244,6 +467,10 @@
 }
 
 .play-elements {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -257,7 +484,7 @@
     border: solid 3px var(--element-color);
     border-radius: 15px;
     height: 3.2rem;
-    padding-right: 1.9rem;
+    padding-right: 0.5rem;
 }
 
 .play-btn {
@@ -319,7 +546,7 @@
     height: 3rem;
     font-size: 3rem;
     color: var(--element-color);
-    margin: 0 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .instance-popup {
@@ -335,44 +562,4 @@
     text-align: center;
 }
 
-.instances-tab {
-    position: relative;
-    background: var(--background);
-    border-radius: 10px;
-    padding: 1rem 3rem;
-}
 
-.close-popup {
-    position: absolute;
-    display: flex;
-    top: 10px;
-    right: 10px;
-    background: var(--shadow);
-    height: 30px;
-    width: 30px;
-    border-radius: 10px;
-    align-items: center;
-    justify-content: center;
-}
-
-.instances-tab p {
-    margin-top: 1.5rem;
-    font-size: 2rem;
-}
-
-.instance-elements {
-    background: var(--background-element);
-    text-align: center;
-    border-radius: 10px;
-    margin: 0.5rem 0;
-    font-size: 1.5rem;
-    cursor: pointer;
-}
-
-.instance-elements:hover {
-    background: var(--element-color);
-}
-
-.active-instance {
-    background: var(--element-color);
-}
