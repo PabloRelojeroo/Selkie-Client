@@ -1,7 +1,7 @@
 {
     "name": "selkieclient",
     "preductname": "Selkie Client",
-    "version": "1.3.5",
+    "version": "1.3.6",
     "description": "Launcher para la comunidad de Selkie",
     "main": "src/app.js",
     "author": {
@@ -9,7 +9,7 @@
         "email": "pablorelojerodev@gmail.com",
         "url": "https://github.com/PabloRelojeroo"
     },
-    "url": "http://127.0.0.1:8080/",
+    "url": "https://launchertest.pablorelojerio.online/",
     "scripts": {
         "start": "cross-env-shell NODE_ENV=dev electron .",
         "dev": "cross-env-shell DEV_TOOL=open nodemon --exec npm start",
