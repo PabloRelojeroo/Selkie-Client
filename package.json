@@ -9,7 +9,7 @@
         "email": "pablorelojerodev@gmail.com",
         "url": "https://github.com/PabloRelojeroo"
     },
-    "url": "https://pablorelojerio.online",
+    "url": "http://127.0.0.1:8080/",
     "scripts": {
         "start": "cross-env-shell NODE_ENV=dev electron .",
         "dev": "cross-env-shell DEV_TOOL=open nodemon --exec npm start",
@@ -25,7 +25,7 @@
     "dependencies": {
         "discord-rpc": "^4.0.1",
         "electron-updater": "^6.6.2",
-        "minecraft-java-core": "^4.1.1",
+        "minecraft-java-core": "latest",
         "node-bdd": "^2.0.4",
         "node-fetch": "^2.7.0",
         "xml-js": "^1.6.11"

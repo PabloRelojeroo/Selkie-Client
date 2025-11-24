@@ -5,11 +5,11 @@
 
 class InstanceAssetsHandler {
     constructor() {
-        this.baseUrl = 'https://pablo.pablorelojerio.online/files';
+        this.baseUrl = 'https://launchertest.pablorelojerio.online//files';
         this.defaultAssets = {
             logo: 'assets/images/default/default-logo.png',
             background: 'assets/images/default/default-background.png',
-            welcomeBackground: 'assets/images/default/welcome-background.jpg', // Imagen para la pantalla de bienvenida
+            welcomeBackground: 'assets/images/default/welcome-background.jpg',
             icon: 'assets/images/icon.png'
         };
         this.addGlobalStyles();
@@ -49,80 +49,39 @@ class InstanceAssetsHandler {
     addGlobalStyles() {
         const style = document.createElement('style');
         style.textContent = `
-            .instance-logo-container {
-                transition: all 0.3s ease;
-                opacity: 0.8;
-                position: relative;
-                padding: 8px;
-                border-radius: 8px;
-                margin: 4px 0;
-                background-color: transparent;
-            }
-
-            .instance-logo-container:hover:not(.disabled):not(.active-instance) {
-                opacity: 1;
-                background-color: rgba(76, 175, 80, 0.1);
-            }
-
-            .instance-logo-container.active-instance {
-                opacity: 1;
-                background-color: rgba(38, 102, 40, 0.53);
-                pointer-events: none;
-            }
-
-            .instance-logo {
-                transition: filter 0.3s ease;
-                width: 48px;
-                height: 48px;
-            }
-
-            .instance-logo-container:not(.active-instance) .instance-logo {
-                filter: grayscale(50%);
-            }
-
-            .instance-logo-container.disabled {
-                opacity: 0.4;
-                cursor: not-allowed;
-                pointer-events: none;
-            }
-
-            .instance-logo-container.disabled::after {
-                content: '🔒';
-                position: absolute;
-                top: 0px;
-                right: 0px;
-                font-size: 14px;
-            }
+            /* Estilos incluidos en home.css mejorado */
         `;
         document.head.appendChild(style);
     }
 
     showWelcomePanel() {
-        // Solo establecer el fondo, sin crear panel
         this.setWelcomeBackground();
     }
     
     hideWelcomePanel() {
-        // Elimina la clase del body que podría ocultar elementos
         document.body.classList.remove('welcome-active');
     }
     
     setWelcomeBackground() {
-        // Usar una imagen específica para cuando no hay instancias seleccionadas
         const backgroundUrl = this.defaultAssets.welcomeBackground;
         
         const img = new Image();
         img.onload = () => {
-            document.body.style.setProperty('background-image', `url('${backgroundUrl}')`, 'important');
-            document.body.style.setProperty('background-size', 'cover', 'important');
-            document.body.style.setProperty('background-position', 'center', 'important');
-            document.body.style.setProperty('background-repeat', 'no-repeat', 'important');
-            document.body.style.setProperty('background-color', 'rgba(0, 0, 0, 0.4)', 'important');
-            document.body.style.setProperty('background-blend-mode', 'overlay', 'important');
+            // Aplicar con transición suave
+            document.body.style.opacity = '0.8';
+            setTimeout(() => {
+                document.body.style.setProperty('background-image', `url('${backgroundUrl}')`, 'important');
+                document.body.style.setProperty('background-size', 'cover', 'important');
+                document.body.style.setProperty('background-position', 'center', 'important');
+                document.body.style.setProperty('background-repeat', 'no-repeat', 'important');
+                document.body.style.setProperty('background-color', 'rgba(0, 0, 0, 0.4)', 'important');
+                document.body.style.setProperty('background-blend-mode', 'overlay', 'important');
+                document.body.style.setProperty('transition', 'all 0.5s ease', 'important');
+                document.body.style.opacity = '1';
+            }, 200);
         };
         
         img.onerror = () => {
-            // Fallback a la imagen de fondo por defecto si hay error
             document.body.style.setProperty('background-image', `url('${this.defaultAssets.background}')`, 'important');
         };
         
@@ -130,18 +89,11 @@ class InstanceAssetsHandler {
     }
 
     async createLogoElement(instance, onClick, username) {
+        console.log(`🏗️ Creando elemento de logo para: ${instance.name}`);
+        
         const container = document.createElement('div');
         container.classList.add('instance-logo-container');
         container.id = `logo-${instance.name}`;
-
-        // Verificar whitelist
-        const isWhitelisted = !instance.whitelistActive || 
-            (instance.whitelist && instance.whitelist.includes(username));
-
-        if (!isWhitelisted) {
-            container.classList.add('disabled');
-            container.title = 'No tienes acceso a esta instancia';
-        }
 
         const img = document.createElement('img');
         img.classList.add('instance-logo');
@@ -155,17 +107,25 @@ class InstanceAssetsHandler {
         }
 
         img.onerror = () => {
-            console.warn(`Error al cargar el logo para ${instance.name}`);
+            console.warn(`⚠️ Error al cargar el logo para ${instance.name}, usando logo por defecto`);
             img.src = this.defaultAssets.logo;
+        };
+
+        img.onload = () => {
+            console.log(`✅ Logo cargado exitosamente para ${instance.name}`);
         };
 
         img.src = logo;
         container.appendChild(img);
         
-        if (onClick && isWhitelisted) {
+        console.log(`✅ Contenedor creado con ID: ${container.id}`);
+        
+        if (onClick) {
             container.addEventListener('click', async () => {
-                // Si ya está activa, no hacemos nada
+                console.log(`🖱️ Click detectado en logo: ${instance.name}`);
+                
                 if (container.classList.contains('active-instance')) {
+                    console.log('⚠️ Esta instancia ya está activa');
                     return;
                 }
 
@@ -176,14 +136,11 @@ class InstanceAssetsHandler {
                 container.classList.add('active-instance');
                 
                 try {
-                    // Ya no necesitamos ocultar un panel, pero mantenemos la llamada
-                    // para mantener consistencia con el código existente
                     this.hideWelcomePanel();
-                    
                     await this.updateInstanceBackground(instance);
                     onClick(instance);
                 } catch (error) {
-                    console.error('Error al actualizar el fondo:', error);
+                    console.error('❌ Error al actualizar el fondo:', error);
                 }
             });
         }
@@ -202,7 +159,10 @@ class InstanceAssetsHandler {
             
             img.onload = () => {
                 console.log('Imagen de fondo cargada exitosamente');
-                document.body.style.opacity = '0';
+                
+                // Transición suave con opacity
+                document.body.style.opacity = '0.7';
+                
                 setTimeout(() => {
                     document.body.style.setProperty('background-image', `url('${background}')`, 'important');
                     document.body.style.setProperty('background-size', 'cover', 'important');
@@ -210,15 +170,21 @@ class InstanceAssetsHandler {
                     document.body.style.setProperty('background-repeat', 'no-repeat', 'important');
                     document.body.style.setProperty('background-blend-mode', 'normal', 'important');
                     document.body.style.setProperty('background-color', 'transparent', 'important');
-                    document.body.style.setProperty('transition', 'opacity 0.5s ease', 'important');
-                    document.body.style.opacity = '1';
+                    document.body.style.setProperty('transition', 'all 0.5s ease', 'important');
+                    
+                    // Fade in suave
+                    setTimeout(() => {
+                        document.body.style.opacity = '1';
+                    }, 50);
                 }, 300);
+                
                 resolve();
             };
 
             img.onerror = (error) => {
                 console.warn(`Error al cargar el fondo para la instancia ${instance.name}:`, error);
                 document.body.style.setProperty('background-image', `url('${this.defaultAssets.background}')`, 'important');
+                document.body.style.opacity = '1';
                 reject(error);
             };
 
