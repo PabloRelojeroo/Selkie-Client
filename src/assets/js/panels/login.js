@@ -15,9 +15,12 @@ class Login {
 
         // Verificar sesión guardada primero
         const sesionExistente = await this.verificarSesion();
-        if (sesionExistente) return;
+        if (sesionExistente) {
+            // Hay sesión válida, ya se redirigió a home
+            return;
+        }
 
-        // Mostrar la pantalla principal con ambos botones
+        // No hay sesión válida, mostrar la pantalla principal con ambos botones
         this.mostrarOpcionesLogin();
 
         document.querySelector('.cancel-home').addEventListener('click', () => {
@@ -33,15 +36,18 @@ class Login {
                 const cuenta = await this.db.readData('accounts', sesionGuardada.cuentaID);
                 if (cuenta) {
                     await accountSelect(cuenta);
+                    // Solo ir al home si hay una sesión válida
+                    changePanel('home');
+                    return true;
                 }
             }
         } catch (error) {
-            // No hay sesión guardada, continuar sin cuenta
+            // No hay sesión guardada, mostrar login
+            console.log('No hay sesión guardada válida');
         }
 
-        // Siempre ir al home panel
-        changePanel('home');
-        return true;
+        // No hay sesión válida, retornar false para mostrar login
+        return false;
     }
 
     mostrarOpcionesLogin() {

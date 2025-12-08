@@ -1,7 +1,7 @@
 {
     "name": "selkieclient",
     "preductname": "Selkie Client",
-    "version": "1.3.7",
+    "version": "1.3.8",
     "description": "Launcher para la comunidad de Selkie",
     "main": "src/app.js",
     "author": {
