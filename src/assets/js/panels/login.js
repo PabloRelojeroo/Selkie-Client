@@ -19,7 +19,7 @@ class Login {
 
         // Mostrar la pantalla principal con ambos botones
         this.mostrarOpcionesLogin();
-        
+
         document.querySelector('.cancel-home').addEventListener('click', () => {
             document.querySelector('.cancel-home').style.display = 'none'
             changePanel('settings')
@@ -33,14 +33,15 @@ class Login {
                 const cuenta = await this.db.readData('accounts', sesionGuardada.cuentaID);
                 if (cuenta) {
                     await accountSelect(cuenta);
-                    changePanel('home');
-                    return true;
                 }
             }
         } catch (error) {
-            // No hay sesión guardada
+            // No hay sesión guardada, continuar sin cuenta
         }
-        return false;
+
+        // Siempre ir al home panel
+        changePanel('home');
+        return true;
     }
 
     mostrarOpcionesLogin() {
@@ -76,7 +77,7 @@ class Login {
         // Ocultar pantalla principal y mostrar login offline
         let loginHome = document.querySelector('.login-home');
         let loginOffline = document.querySelector('.login-offline');
-        
+
         if (loginHome) loginHome.style.display = 'none';
         if (loginOffline) loginOffline.style.display = 'block';
 
@@ -121,7 +122,7 @@ class Login {
                 // Volver a la pantalla principal
                 let loginHome = document.querySelector('.login-home');
                 let loginOffline = document.querySelector('.login-offline');
-                
+
                 if (loginOffline) loginOffline.style.display = 'none';
                 if (loginHome) loginHome.style.display = 'block';
                 cancelOffline.style.display = 'none';
@@ -131,7 +132,7 @@ class Login {
         if (connectOffline) {
             // Remover event listeners previos
             connectOffline.removeEventListener('click', this.handleOfflineConnect);
-            
+
             // Agregar nuevo event listener
             this.handleOfflineConnect = async () => {
                 if (!emailOffline || emailOffline.value.length < 3) {
@@ -165,7 +166,7 @@ class Login {
                 await this.saveData(MojangConnect)
                 popupLogin.closePopup();
             };
-            
+
             connectOffline.addEventListener('click', this.handleOfflineConnect);
         }
     }
@@ -295,10 +296,10 @@ class Login {
         }
 
         await this.db.updateData('configClient', configClient);
-        
+
         // Guardar sesión para que persista
         await this.guardarSesion(account);
-        
+
         await addAccount(account);
         await accountSelect(account);
         changePanel('home');

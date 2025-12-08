@@ -607,6 +607,8 @@
 .info-starting-game {
     display: none;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     gap: 12px;
     padding: 25px;
     background: var(--background-transparent);
@@ -615,6 +617,7 @@
     box-shadow: 0 8px 32px var(--shadow);
     animation: fadeIn 0.4s ease-out;
     min-width: 300px;
+    text-align: center;
 }
 
 .info-starting-game-text {
@@ -688,11 +691,14 @@
 
 .download-stats {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
     padding: 0 10px;
     font-size: 0.9rem;
     opacity: 0.9;
     animation: fadeIn 0.5s ease-out;
+    width: 100%;
 }
 
 .download-speed,

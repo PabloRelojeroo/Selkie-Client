@@ -69,7 +69,7 @@ ipcMain.handle('Microsoft-refresh', async (_, client_id, refresh_token) => {
     try {
         const microsoft = new Microsoft(client_id);
         const refreshedAuth = await microsoft.refresh(refresh_token);
-        
+
         // Asegúrate de que el objeto devuelto tenga la estructura correcta
         if (refreshedAuth && refreshedAuth.access_token) {
             return {
