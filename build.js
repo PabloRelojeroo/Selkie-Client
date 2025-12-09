@@ -130,7 +130,6 @@ class Index {
                     },
 
                     // Optimizaciones adicionales
-                    systemIntegration: "ask", // Evita delays en primera ejecución
                     license: "LICENSE.md"
                 }
             }
