@@ -29,20 +29,13 @@ class database {
             fs.mkdirSync(dbPath, { recursive: true });
         }
 
-        if (!dev) alert(`DEBUG: DB Path: ${dbPath}\nTable: ${tableName}`);
-
-        try {
-            return await nodedatabase.intilize({
-                databaseName: 'Databases',
-                fileType: 'db',
-                tableName: tableName,
-                path: dbPath,
-                tableColumns: tableConfig,
-            });
-        } catch (e) {
-            alert(`ERROR initializing DB ${tableName}: ${e.message}`);
-            throw e;
-        }
+        return await nodedatabase.intilize({
+            databaseName: 'Databases',
+            fileType: 'db',
+            tableName: tableName,
+            path: dbPath,
+            tableColumns: tableConfig,
+        });
     }
 
     async getDatabase(tableName) {

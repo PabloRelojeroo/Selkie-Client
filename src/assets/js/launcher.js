@@ -151,6 +151,7 @@ class Launcher {
                     let refresh_accounts = await new Microsoft(this.config.client_id).refresh(account);
 
                     if (refresh_accounts.error) {
+                        alert(`DEBUG: Refresh Failed for ${account.name}\nClient ID: ${this.config.client_id}\nError: ${JSON.stringify(refresh_accounts)}`);
                         await this.db.deleteData('accounts', account_ID)
                         if (account_ID == account_selected) {
                             configClient.account_selected = null
