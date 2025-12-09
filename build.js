@@ -70,7 +70,7 @@ class Index {
                 extraMetadata: { main: 'app/app.js' },
                 files: ["app/**/*", "package.json", "LICENSE.md"],
                 directories: { "output": "dist" },
-                compression: 'maximum',
+                compression: 'normal',
                 asar: true,
                 publish: [{
                     provider: "github",
@@ -118,24 +118,7 @@ class Index {
                         arch: "x64"
                     }]
                 },
-                appImage: {
-                    // Optimizaciones críticas para velocidad de inicio
-                    compression: "store", // Sin compresión = inicio mucho más rápido
-                    // Alternativa: "gzip" para balance tamaño/velocidad
 
-                    // Desktop integration
-                    desktop: {
-                        entry: {
-                            StartupWMClass: "selkieclient",
-                            StartupNotify: "true",
-                            Categories: "Game;",
-                            MimeType: "x-scheme-handler/selkie;"
-                        }
-                    },
-
-                    // Optimizaciones adicionales
-                    license: "LICENSE.md"
-                }
             }
         }).then(() => {
             console.log('El buildeo ha finalizado')
