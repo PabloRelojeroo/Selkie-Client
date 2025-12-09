@@ -108,8 +108,10 @@ class Index {
                     synopsis: "Launcher para la comunidad de Selkie",
                     description: "Launcher oficial para la comunidad de Selkie Minecraft",
                     desktop: {
-                        StartupWMClass: "selkieclient",
-                        StartupNotify: "true"
+                        entry: {
+                            StartupWMClass: "selkieclient",
+                            StartupNotify: "true"
+                        }
                     },
                     target: [{
                         target: "AppImage",
@@ -123,10 +125,12 @@ class Index {
 
                     // Desktop integration
                     desktop: {
-                        StartupWMClass: "selkieclient",
-                        StartupNotify: "true",
-                        Categories: "Game;",
-                        MimeType: "x-scheme-handler/selkie;"
+                        entry: {
+                            StartupWMClass: "selkieclient",
+                            StartupNotify: "true",
+                            Categories: "Game;",
+                            MimeType: "x-scheme-handler/selkie;"
+                        }
                     },
 
                     // Optimizaciones adicionales
