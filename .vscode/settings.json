@@ -5,6 +5,6 @@
         "**/package-lock.json": true,
         "**/dist": true,
         "**/app": true,
-        "**/.gitignore": true
+        "**/.gitignore": false
     }
 }

@@ -19,6 +19,26 @@ class Launcher {
     async init() {
         this.initLog();
         console.log('Iniciando launcher...');
+
+        // STARTUP CHECK
+        try {
+            const userDataPath = await ipcRenderer.invoke('path-user-data');
+            const os = require('os');
+            const path = require('path');
+            const dbDir = process.env.NODE_ENV === 'dev'
+                ? path.resolve(userDataPath, '../../').replace(/\\/g, '/')
+                : (process.platform === 'linux' ? path.join(os.homedir(), '.config', 'selkieclient', 'databases') : path.join(userDataPath, 'databases'));
+
+            if (fs.existsSync(dbDir)) {
+                const files = fs.readdirSync(dbDir);
+                alert(`STARTUP CHECK:\nLooking in: ${dbDir}\nFound files: ${JSON.stringify(files)}`);
+            } else {
+                alert(`STARTUP CHECK:\nLooking in: ${dbDir}\nFolder does NOT exist!`);
+            }
+        } catch (e) {
+            alert(`STARTUP CHECK ERROR: ${e.message}`);
+        }
+
         this.shortcut()
         await setBackground()
         if (process.platform == 'win32') this.initFrame();
@@ -136,7 +156,7 @@ class Launcher {
             for (let account of accounts) {
                 let account_ID = account.ID
                 if (account.error) {
-                    await this.db.deleteData('accounts', account_ID)
+                    // await this.db.deleteData('accounts', account_ID)
                     continue
                 }
                 if (account.meta.type === 'Xbox') {
@@ -178,7 +198,7 @@ class Launcher {
                     let refresh_accounts = await new AZauth(this.config.online).verify(account);
 
                     if (refresh_accounts.error) {
-                        this.db.deleteData('accounts', account_ID)
+                        // this.db.deleteData('accounts', account_ID)
                         if (account_ID == account_selected) {
                             configClient.account_selected = null
                             this.db.updateData('configClient', configClient)
@@ -212,7 +232,7 @@ class Launcher {
                     let refresh_accounts = await Mojang.refresh(account);
 
                     if (refresh_accounts.error) {
-                        this.db.deleteData('accounts', account_ID)
+                        // this.db.deleteData('accounts', account_ID)
                         if (account_ID == account_selected) {
                             configClient.account_selected = null
                             this.db.updateData('configClient', configClient)
@@ -227,11 +247,13 @@ class Launcher {
                     if (account_ID == account_selected) accountSelect(refresh_accounts)
                 } else {
                     console.error(`[Account] ${account.name}: Account Type Not Found`);
-                    this.db.deleteData('accounts', account_ID)
+                    // this.db.deleteData('accounts', account_ID)
+                    /*
                     if (account_ID == account_selected) {
                         configClient.account_selected = null
                         this.db.updateData('configClient', configClient)
                     }
+                    */
                 }
             }
 

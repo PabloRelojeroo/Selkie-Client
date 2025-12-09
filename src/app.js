@@ -6,6 +6,7 @@
 const { app, ipcMain, nativeTheme } = require('electron');
 const { Microsoft } = require('minecraft-java-core');
 const { autoUpdater } = require('electron-updater')
+const os = require('os');
 
 const path = require('path');
 const fs = require('fs');
@@ -13,12 +14,21 @@ const fs = require('fs');
 const UpdateWindow = require("./assets/js/windows/updateWindow.js");
 const MainWindow = require("./assets/js/windows/mainWindow.js");
 
+// SINGLE INSTANCE LOCK
+if (!app.requestSingleInstanceLock()) {
+    console.log('Second instance detected. Quitting.');
+    app.quit();
+    return;
+}
+
 let dev = process.env.NODE_ENV === 'dev';
 
 // Configurar userData path de forma consistente para dev y producción
 const userDataPath = dev
     ? path.resolve('./data/Launcher').replace(/\\/g, '/')
-    : path.join(app.getPath('appData'), 'selkieclient');
+    : (process.platform === 'linux'
+        ? path.join(os.homedir(), '.config', 'selkieclient')
+        : path.join(app.getPath('appData'), 'selkieclient'));
 
 // Crear directorio si no existe
 if (!fs.existsSync(userDataPath)) {
@@ -56,8 +66,9 @@ if (process.platform === 'linux') {
     app.commandLine.appendSwitch('js-flags', '--max-old-space-size=2048');
 }
 
-if (!app.requestSingleInstanceLock()) app.quit();
-else app.whenReady().then(() => {
+app.commandLine.appendSwitch('js-flags', '--max-old-space-size=2048');
+
+app.whenReady().then(() => {
     if (dev) return MainWindow.createWindow()
     UpdateWindow.createWindow()
 });

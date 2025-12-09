@@ -13,13 +13,6 @@ class Login {
         this.config = config;
         this.db = new database();
 
-        // Verificar sesión guardada primero
-        const sesionExistente = await this.verificarSesion();
-        if (sesionExistente) {
-            // Hay sesión válida, ya se redirigió a home
-            return;
-        }
-
         // No hay sesión válida, mostrar la pantalla principal con ambos botones
         this.mostrarOpcionesLogin();
 
@@ -29,26 +22,7 @@ class Login {
         })
     }
 
-    async verificarSesion() {
-        try {
-            const sesionGuardada = await this.db.readData('sesionGuardada');
-            if (sesionGuardada && sesionGuardada.expira > Date.now()) {
-                const cuenta = await this.db.readData('accounts', sesionGuardada.cuentaID);
-                if (cuenta) {
-                    await accountSelect(cuenta);
-                    // Solo ir al home si hay una sesión válida
-                    changePanel('home');
-                    return true;
-                }
-            }
-        } catch (error) {
-            // No hay sesión guardada, mostrar login
-            console.log('No hay sesión guardada válida');
-        }
 
-        // No hay sesión válida, retornar false para mostrar login
-        return false;
-    }
 
     mostrarOpcionesLogin() {
         // Mostrar la pantalla principal con ambos botones
@@ -303,25 +277,6 @@ class Login {
 
         await this.db.updateData('configClient', configClient);
 
-        // Guardar sesión para que persista
-        await this.guardarSesion(account);
-
-        await addAccount(account);
-        await accountSelect(account);
-        changePanel('home');
-    }
-
-    async guardarSesion(account) {
-        try {
-            const sesionData = {
-                cuentaID: account.ID,
-                nombre: account.name,
-                expira: Date.now() + (7 * 24 * 60 * 60 * 1000) // 7 días
-            };
-            await this.db.createData('sesionGuardada', sesionData);
-        } catch (error) {
-            console.log('Error al guardar sesión:', error);
-        }
     }
 }
 export default Login;

@@ -20,23 +20,60 @@ class database {
         if (!fs.existsSync(dbDir)) {
             fs.mkdirSync(dbDir, { recursive: true });
         }
+
+        // DEBUG PATH
+        /*
+        try {
+            const logPath = path.join(dbDir, 'db_debug.log');
+            fs.appendFileSync(logPath, `[PATH] ${tableName} -> ${path.join(dbDir, `${tableName}.json`)}\n`);
+        } catch(e) {}
+        */
+
         return path.join(dbDir, `${tableName}.json`);
     }
 
     async _readFile(tableName) {
         const filePath = await this._getFilePath(tableName);
-        if (!fs.existsSync(filePath)) return [];
+
+        // DEBUG READ
         try {
+            const userDataPath = await ipcRenderer.invoke('path-user-data');
+            const dbDir = dev ? path.resolve(userDataPath, '../../').replace(/\\/g, '/') : path.join(userDataPath, 'databases');
+            const logPath = path.join(dbDir, 'db_debug.log');
+
+            if (!fs.existsSync(filePath)) {
+                fs.appendFileSync(logPath, `[${new Date().toISOString()}] READ ${tableName}: FILE NOT FOUND at ${filePath}\n`);
+                return [];
+            }
             const content = fs.readFileSync(filePath, 'utf-8');
+            fs.appendFileSync(logPath, `[${new Date().toISOString()}] READ ${tableName}: Success (${content.length} bytes)\n`);
             return JSON.parse(content) || [];
         } catch (error) {
             console.error(`Error reading database ${tableName}:`, error);
+            // Log error
+            try {
+                const userDataPath = await ipcRenderer.invoke('path-user-data');
+                const dbDir = dev ? path.resolve(userDataPath, '../../').replace(/\\/g, '/') : path.join(userDataPath, 'databases');
+                const logPath = path.join(dbDir, 'db_debug.log');
+                fs.appendFileSync(logPath, `[${new Date().toISOString()}] ERROR READ ${tableName}: ${error.message}\n`);
+            } catch (e) { }
             return [];
         }
     }
 
     async _writeFile(tableName, data) {
         const filePath = await this._getFilePath(tableName);
+
+        // DEBUG LOGGING
+        try {
+            const userDataPath = await ipcRenderer.invoke('path-user-data');
+            const logPath = path.join(dev ? path.resolve(userDataPath, '../../') : path.join(userDataPath, 'databases'), 'db_debug.log');
+            const logEntry = `[${new Date().toISOString()}] WRITE ${tableName}: ${JSON.stringify(data).substring(0, 100)}...\n`;
+            fs.appendFileSync(logPath, logEntry);
+        } catch (e) {
+            console.error('Log error', e);
+        }
+
         fs.writeFileSync(filePath, JSON.stringify(data, null, 4), 'utf-8');
     }
 
