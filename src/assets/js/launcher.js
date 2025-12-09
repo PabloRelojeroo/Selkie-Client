@@ -151,11 +151,14 @@ class Launcher {
                     let refresh_accounts = await new Microsoft(this.config.client_id).refresh(account);
 
                     if (refresh_accounts.error) {
-                        await this.db.deleteData('accounts', account_ID)
+                        alert(`Session Refresh Failed for ${account.name}.\nReason: ${refresh_accounts.errorMessage || JSON.stringify(refresh_accounts)}\n\nYour session was NOT deleted. Please check your internet connection.`);
+                        // await this.db.deleteData('accounts', account_ID)
+                        /*
                         if (account_ID == account_selected) {
                             configClient.account_selected = null
                             await this.db.updateData('configClient', configClient)
                         }
+                        */
                         console.error(`[Account] ${account.name}: ${refresh_accounts.errorMessage}`);
                         continue;
                     }
