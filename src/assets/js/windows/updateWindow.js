@@ -34,6 +34,7 @@ function createWindow() {
             contextIsolation: false,
             nodeIntegration: true
         },
+        backgroundColor: '#292929'
     });
     Menu.setApplicationMenu(null);
     updateWindow.setMenuBarVisibility(false);
