@@ -46,8 +46,44 @@ function createWindow() {
     });
 }
 
+async function expandToMainWindow() {
+    if (!updateWindow) return;
+
+    const startWidth = 400;
+    const startHeight = 500;
+    const endWidth = 1280;
+    const endHeight = 720;
+
+    const duration = 800; // ms
+    const fps = 60;
+    const frames = (duration / 1000) * fps;
+    const delay = duration / frames;
+
+    // Función de easing (ease-in-out)
+    const easeInOutCubic = (t) => {
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    };
+
+    // Animar el resize
+    for (let i = 0; i <= frames; i++) {
+        const progress = easeInOutCubic(i / frames);
+        const currentWidth = Math.round(startWidth + (endWidth - startWidth) * progress);
+        const currentHeight = Math.round(startHeight + (endHeight - startHeight) * progress);
+
+        updateWindow.setSize(currentWidth, currentHeight, true);
+        updateWindow.center();
+
+        await new Promise(resolve => setTimeout(resolve, delay));
+    }
+
+    // Asegurar tamaño final exacto
+    updateWindow.setSize(endWidth, endHeight, true);
+    updateWindow.center();
+}
+
 module.exports = {
     getWindow,
     createWindow,
     destroyWindow,
+    expandToMainWindow,
 };

@@ -126,25 +126,16 @@ class Splash {
     async startLauncher() {
         this.setStatus(`Iniciando cliente`);
 
-        // Get the expansion container
+        // Fade out del contenido del splash
         const expansionContainer = document.querySelector('.expansion-container');
+        expansionContainer.style.transition = 'opacity 0.5s ease';
+        expansionContainer.style.opacity = '0';
 
-        // Start expansion animation
-        await sleep(300);
-        expansionContainer.classList.add('expand');
-
-        // Wait for expansion to complete
-        await sleep(800);
-
-        // Start fade out
-        expansionContainer.classList.add('fade-out');
-
-        // Wait for fade out to complete
+        // Esperar a que termine el fade out
         await sleep(500);
 
-        // Open main window and close update window
-        ipcRenderer.send('main-window-open');
-        ipcRenderer.send('update-window-close');
+        // Trigger window expansion y carga del launcher
+        ipcRenderer.send('expand-and-load-main');
     }
 
     shutdown(text) {

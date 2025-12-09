@@ -104,10 +104,34 @@ class Index {
                 },
                 linux: {
                     icon: "./app/assets/images/icon.png",
+                    category: "Game",
+                    synopsis: "Launcher para la comunidad de Selkie",
+                    description: "Launcher oficial para la comunidad de Selkie Minecraft",
+                    desktop: {
+                        StartupWMClass: "selkieclient",
+                        StartupNotify: "true"
+                    },
                     target: [{
                         target: "AppImage",
                         arch: "x64"
                     }]
+                },
+                appImage: {
+                    // Optimizaciones críticas para velocidad de inicio
+                    compression: "store", // Sin compresión = inicio mucho más rápido
+                    // Alternativa: "gzip" para balance tamaño/velocidad
+
+                    // Desktop integration
+                    desktop: {
+                        StartupWMClass: "selkieclient",
+                        StartupNotify: "true",
+                        Categories: "Game;",
+                        MimeType: "x-scheme-handler/selkie;"
+                    },
+
+                    // Optimizaciones adicionales
+                    systemIntegration: "ask", // Evita delays en primera ejecución
+                    license: "LICENSE.md"
                 }
             }
         }).then(() => {

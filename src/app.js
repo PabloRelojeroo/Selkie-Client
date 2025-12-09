@@ -24,6 +24,22 @@ if (dev) {
     app.setPath('appData', appdata)
 }
 
+// Optimizaciones específicas para Linux
+if (process.platform === 'linux') {
+    // Habilitar aceleración de hardware
+    app.commandLine.appendSwitch('enable-features', 'VaapiVideoDecoder');
+    app.commandLine.appendSwitch('ignore-gpu-blocklist');
+    app.commandLine.appendSwitch('enable-gpu-rasterization');
+    app.commandLine.appendSwitch('enable-zero-copy');
+
+    // Reducir overhead de inicio
+    app.commandLine.appendSwitch('disable-background-timer-throttling');
+    app.commandLine.appendSwitch('disable-renderer-backgrounding');
+
+    // Optimización de memoria
+    app.commandLine.appendSwitch('js-flags', '--max-old-space-size=2048');
+}
+
 if (!app.requestSingleInstanceLock()) app.quit();
 else app.whenReady().then(() => {
     if (dev) return MainWindow.createWindow()
@@ -45,6 +61,28 @@ ipcMain.on('update-window-dev-tools', () => UpdateWindow.getWindow().webContents
 ipcMain.on('update-window-progress', (event, options) => UpdateWindow.getWindow().setProgressBar(options.progress / options.size))
 ipcMain.on('update-window-progress-reset', () => UpdateWindow.getWindow().setProgressBar(-1))
 ipcMain.on('update-window-progress-load', () => UpdateWindow.getWindow().setProgressBar(2))
+
+ipcMain.on('expand-and-load-main', async () => {
+    const updateWin = UpdateWindow.getWindow();
+    if (!updateWin) return;
+
+    // Expandir la ventana
+    await UpdateWindow.expandToMainWindow();
+
+    // Pequeña pausa para que se vea la expansión completa
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    // Cargar el contenido del launcher en la misma ventana
+    updateWin.loadFile(path.join(`${app.getAppPath()}/src/launcher.html`));
+
+    // Hacer la ventana redimensionable y actualizar propiedades
+    updateWin.setResizable(true);
+    updateWin.setMinimumSize(980, 552);
+
+    // En Windows, mantener sin frame; en otros OS, agregar frame
+    // (esto requeriría recrear la ventana, así que lo dejamos como está)
+})
+
 
 ipcMain.handle('path-user-data', () => app.getPath('userData'))
 ipcMain.handle('appData', e => app.getPath('appData'))
