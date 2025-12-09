@@ -105,7 +105,7 @@ class Splash {
         else if (os == 'linux') latest = this.getLatestReleaseForOS('linux', '.appimage', latestRelease);
 
 
-        this.setStatus(`Mise à jour disponible !<br><div class="download-update">Télécharger</div>`);
+        this.setStatus(`Nueva version disponible<br><div class="download-update">Descargar</div>`);
         document.querySelector(".download-update").addEventListener("click", () => {
             shell.openExternal(latest.browser_download_url);
             return this.shutdown("Descarga en curso...");
@@ -123,8 +123,26 @@ class Splash {
         })
     }
 
-    startLauncher() {
+    async startLauncher() {
         this.setStatus(`Iniciando cliente`);
+
+        // Get the expansion container
+        const expansionContainer = document.querySelector('.expansion-container');
+
+        // Start expansion animation
+        await sleep(300);
+        expansionContainer.classList.add('expand');
+
+        // Wait for expansion to complete
+        await sleep(800);
+
+        // Start fade out
+        expansionContainer.classList.add('fade-out');
+
+        // Wait for fade out to complete
+        await sleep(500);
+
+        // Open main window and close update window
         ipcRenderer.send('main-window-open');
         ipcRenderer.send('update-window-close');
     }
