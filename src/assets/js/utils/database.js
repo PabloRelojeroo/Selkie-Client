@@ -11,11 +11,24 @@ let dev = process.env.NODE_ENV === 'dev';
 
 class database {
     async creatDatabase(tableName, tableConfig) {
+        const userDataPath = await ipcRenderer.invoke('path-user-data');
+        // En desarrollo: mantener compatibilidad con ubicación anterior (data/)
+        // En producción: usar ubicación consistente (userData/databases)
+        const dbPath = dev
+            ? `${userDataPath}/../..`
+            : `${userDataPath}/databases`;
+
+        // Log para debugging (solo en dev)
+        if (dev) {
+            console.log('[DB] Database path:', dbPath);
+            console.log('[DB] Table:', tableName);
+        }
+
         return await nodedatabase.intilize({
             databaseName: 'Databases',
-            fileType: 'db', // Unificado para dev y producción
+            fileType: 'db',
             tableName: tableName,
-            path: `${await ipcRenderer.invoke('path-user-data')}${dev ? '../..' : '/databases'}`,
+            path: dbPath,
             tableColumns: tableConfig,
         });
     }

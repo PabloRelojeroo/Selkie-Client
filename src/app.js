@@ -15,13 +15,29 @@ const MainWindow = require("./assets/js/windows/mainWindow.js");
 
 let dev = process.env.NODE_ENV === 'dev';
 
+// Configurar userData path de forma consistente para dev y producción
+const userDataPath = dev
+    ? path.resolve('./data/Launcher').replace(/\\/g, '/')
+    : path.join(app.getPath('appData'), 'selkieclient');
+
+// Crear directorio si no existe
+if (!fs.existsSync(userDataPath)) {
+    fs.mkdirSync(userDataPath, { recursive: true });
+}
+
+// Configurar path
+app.setPath('userData', userDataPath);
+
+// Logging para debugging
+console.log('[INIT] userData path:', app.getPath('userData'));
+console.log('[INIT] Mode:', dev ? 'development' : 'production');
+console.log('[INIT] Platform:', process.platform);
+
+// En desarrollo, también configurar appData
 if (dev) {
-    let appPath = path.resolve('./data/Launcher').replace(/\\/g, '/');
     let appdata = path.resolve('./data').replace(/\\/g, '/');
-    if (!fs.existsSync(appPath)) fs.mkdirSync(appPath, { recursive: true });
     if (!fs.existsSync(appdata)) fs.mkdirSync(appdata, { recursive: true });
-    app.setPath('userData', appPath);
-    app.setPath('appData', appdata)
+    app.setPath('appData', appdata);
 }
 
 // Optimizaciones específicas para Linux
@@ -86,6 +102,12 @@ ipcMain.on('expand-and-load-main', async () => {
 
 ipcMain.handle('path-user-data', () => app.getPath('userData'))
 ipcMain.handle('appData', e => app.getPath('appData'))
+ipcMain.handle('get-paths-info', () => ({
+    userData: app.getPath('userData'),
+    appData: app.getPath('appData'),
+    mode: dev ? 'development' : 'production',
+    platform: process.platform
+}))
 
 ipcMain.on('main-window-maximize', () => {
     if (MainWindow.getWindow().isMaximized()) {
