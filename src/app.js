@@ -63,14 +63,38 @@ else app.whenReady().then(() => {
 });
 
 ipcMain.on('main-window-open', () => MainWindow.createWindow())
-ipcMain.on('main-window-dev-tools', () => MainWindow.getWindow().webContents.openDevTools({ mode: 'detach' }))
-ipcMain.on('main-window-dev-tools-close', () => MainWindow.getWindow().webContents.closeDevTools())
-ipcMain.on('main-window-close', () => MainWindow.destroyWindow())
-ipcMain.on('main-window-reload', () => MainWindow.getWindow().reload())
-ipcMain.on('main-window-progress', (event, options) => MainWindow.getWindow().setProgressBar(options.progress / options.size))
-ipcMain.on('main-window-progress-reset', () => MainWindow.getWindow().setProgressBar(-1))
-ipcMain.on('main-window-progress-load', () => MainWindow.getWindow().setProgressBar(2))
-ipcMain.on('main-window-minimize', () => MainWindow.getWindow().minimize())
+ipcMain.on('main-window-dev-tools', () => {
+    const win = MainWindow.getWindow() || UpdateWindow.getWindow();
+    if (win) win.webContents.openDevTools({ mode: 'detach' });
+})
+ipcMain.on('main-window-dev-tools-close', () => {
+    const win = MainWindow.getWindow() || UpdateWindow.getWindow();
+    if (win) win.webContents.closeDevTools();
+})
+ipcMain.on('main-window-close', () => {
+    if (MainWindow.getWindow()) MainWindow.destroyWindow();
+    else if (UpdateWindow.getWindow()) UpdateWindow.destroyWindow();
+})
+ipcMain.on('main-window-reload', () => {
+    const win = MainWindow.getWindow() || UpdateWindow.getWindow();
+    if (win) win.reload();
+})
+ipcMain.on('main-window-progress', (event, options) => {
+    const win = MainWindow.getWindow() || UpdateWindow.getWindow();
+    if (win) win.setProgressBar(options.progress / options.size);
+})
+ipcMain.on('main-window-progress-reset', () => {
+    const win = MainWindow.getWindow() || UpdateWindow.getWindow();
+    if (win) win.setProgressBar(-1);
+})
+ipcMain.on('main-window-progress-load', () => {
+    const win = MainWindow.getWindow() || UpdateWindow.getWindow();
+    if (win) win.setProgressBar(2);
+})
+ipcMain.on('main-window-minimize', () => {
+    const win = MainWindow.getWindow() || UpdateWindow.getWindow();
+    if (win) win.minimize();
+})
 
 ipcMain.on('update-window-close', () => UpdateWindow.destroyWindow())
 ipcMain.on('update-window-dev-tools', () => UpdateWindow.getWindow().webContents.openDevTools({ mode: 'detach' }))
@@ -110,15 +134,24 @@ ipcMain.handle('get-paths-info', () => ({
 }))
 
 ipcMain.on('main-window-maximize', () => {
-    if (MainWindow.getWindow().isMaximized()) {
-        MainWindow.getWindow().unmaximize();
-    } else {
-        MainWindow.getWindow().maximize();
+    const win = MainWindow.getWindow() || UpdateWindow.getWindow();
+    if (win) {
+        if (win.isMaximized()) {
+            win.unmaximize();
+        } else {
+            win.maximize();
+        }
     }
 })
 
-ipcMain.on('main-window-hide', () => MainWindow.getWindow().hide())
-ipcMain.on('main-window-show', () => MainWindow.getWindow().show())
+ipcMain.on('main-window-hide', () => {
+    const win = MainWindow.getWindow() || UpdateWindow.getWindow();
+    if (win) win.hide();
+})
+ipcMain.on('main-window-show', () => {
+    const win = MainWindow.getWindow() || UpdateWindow.getWindow();
+    if (win) win.show();
+})
 
 ipcMain.handle('Microsoft-window', async (_, client_id) => {
     return await new Microsoft(client_id).getAuth();

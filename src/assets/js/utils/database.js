@@ -6,6 +6,7 @@
 const { NodeBDD, DataType } = require('node-bdd');
 const nodedatabase = new NodeBDD()
 const { ipcRenderer } = require('electron')
+const fs = require('fs');
 
 let dev = process.env.NODE_ENV === 'dev';
 
@@ -22,6 +23,10 @@ class database {
         if (dev) {
             console.log('[DB] Database path:', dbPath);
             console.log('[DB] Table:', tableName);
+        }
+
+        if (!fs.existsSync(dbPath)) {
+            fs.mkdirSync(dbPath, { recursive: true });
         }
 
         return await nodedatabase.intilize({
