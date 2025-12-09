@@ -3,86 +3,114 @@
  * @license CC-BY-NC 4.0 - https://creativecommons.org/licenses/by-nc/4.0
  */
 
-const { NodeBDD, DataType } = require('node-bdd');
-const nodedatabase = new NodeBDD()
-const { ipcRenderer } = require('electron')
+const { ipcRenderer } = require('electron');
 const fs = require('fs');
+const path = require('path');
 
 let dev = process.env.NODE_ENV === 'dev';
 
 class database {
-    async creatDatabase(tableName, tableConfig) {
+
+    async _getFilePath(tableName) {
         const userDataPath = await ipcRenderer.invoke('path-user-data');
-        // En desarrollo: mantener compatibilidad con ubicación anterior (data/)
-        // En producción: usar ubicación consistente (userData/databases)
-        const dbPath = dev
-            ? `${userDataPath}/../..`
-            : `${userDataPath}/databases`;
+        const dbDir = dev
+            ? path.resolve(userDataPath, '../../').replace(/\\/g, '/')
+            : path.join(userDataPath, 'databases');
 
-        // Log para debugging (solo en dev)
-        if (dev) {
-            console.log('[DB] Database path:', dbPath);
-            console.log('[DB] Table:', tableName);
+        if (!fs.existsSync(dbDir)) {
+            fs.mkdirSync(dbDir, { recursive: true });
         }
+        return path.join(dbDir, `${tableName}.json`);
+    }
 
-        if (!fs.existsSync(dbPath)) {
-            fs.mkdirSync(dbPath, { recursive: true });
+    async _readFile(tableName) {
+        const filePath = await this._getFilePath(tableName);
+        if (!fs.existsSync(filePath)) return [];
+        try {
+            const content = fs.readFileSync(filePath, 'utf-8');
+            return JSON.parse(content) || [];
+        } catch (error) {
+            console.error(`Error reading database ${tableName}:`, error);
+            return [];
         }
+    }
 
-        return await nodedatabase.intilize({
-            databaseName: 'Databases',
-            fileType: 'db',
-            tableName: tableName,
-            path: dbPath,
-            tableColumns: tableConfig,
-        });
+    async _writeFile(tableName, data) {
+        const filePath = await this._getFilePath(tableName);
+        fs.writeFileSync(filePath, JSON.stringify(data, null, 4), 'utf-8');
+    }
+
+    // Mock API for compatibility (previously creatDatabase was used to init node-bdd)
+    async creatDatabase(tableName, tableConfig) {
+        return tableName;
     }
 
     async getDatabase(tableName) {
-        return await this.creatDatabase(tableName, {
-            json_data: DataType.TEXT.TEXT,
-        });
+        return tableName;
     }
 
     async createData(tableName, data) {
-        let table = await this.getDatabase(tableName);
-        data = await nodedatabase.createData(table, { json_data: JSON.stringify(data) })
-        let id = data.id
-        data = JSON.parse(data.json_data)
-        data.ID = id
-        return data
+        const items = await this._readFile(tableName);
+
+        // Auto-increment ID
+        const maxId = items.reduce((max, item) => (item.id > max ? item.id : max), 0);
+        const newId = maxId + 1;
+
+        const newItem = {
+            id: newId,
+            ...data
+        };
+
+        items.push(newItem);
+        await this._writeFile(tableName, items);
+
+        // Return compliance with previous API (ID capitalized)
+        return {
+            ...newItem,
+            ID: newId
+        };
     }
 
     async readData(tableName, key = 1) {
-        let table = await this.getDatabase(tableName);
-        let data = await nodedatabase.getDataById(table, key)
-        if (data) {
-            let id = data.id
-            data = JSON.parse(data.json_data)
-            data.ID = id
+        const items = await this._readFile(tableName);
+        const item = items.find(i => i.id == key);
+
+        if (item) {
+            return {
+                ...item,
+                ID: item.id
+            };
         }
-        return data ? data : undefined
+        return undefined;
     }
 
     async readAllData(tableName) {
-        let table = await this.getDatabase(tableName);
-        let data = await nodedatabase.getAllData(table)
-        return data.map(info => {
-            let id = info.id
-            info = JSON.parse(info.json_data)
-            info.ID = id
-            return info
-        })
+        const items = await this._readFile(tableName);
+        return items.map(item => ({
+            ...item,
+            ID: item.id
+        }));
     }
 
     async updateData(tableName, data, key = 1) {
-        let table = await this.getDatabase(tableName);
-        await nodedatabase.updateData(table, { json_data: JSON.stringify(data) }, key)
+        const items = await this._readFile(tableName);
+        const index = items.findIndex(i => i.id == key);
+
+        if (index !== -1) {
+            // Merge existing data with updates, keeping the ID
+            items[index] = {
+                ...items[index],
+                ...data,
+                id: key // Ensure ID doesn't change
+            };
+            await this._writeFile(tableName, items);
+        }
     }
 
     async deleteData(tableName, key = 1) {
-        let table = await this.getDatabase(tableName);
-        await nodedatabase.deleteData(table, key)
+        let items = await this._readFile(tableName);
+        items = items.filter(i => i.id != key);
+        await this._writeFile(tableName, items);
     }
 }
 

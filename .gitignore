@@ -7,3 +7,5 @@ node-v*
 data
 .DS_Store
 Databases.db
+accounts.json
+configClient.json

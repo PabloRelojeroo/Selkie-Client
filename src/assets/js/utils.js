@@ -79,7 +79,8 @@ async function accountSelect(data) {
 
 async function headplayer(skinBase64) {
     let skin = await new skin2D().creatHeadTexture(skinBase64);
-    document.querySelector(".player-head").style.backgroundImage = `url(${skin})`;
+    let head = document.querySelector(".player-head");
+    if (head) head.style.backgroundImage = `url(${skin})`;
 }
 
 async function setStatus(opt) {
